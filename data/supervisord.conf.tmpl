@@ -1,0 +1,28 @@
+[supervisord]
+nodaemon=true
+
+[program:xvfb]
+environment=DISPLAY=":1"
+command=/usr/bin/Xvfb :1 -screen 0 %SCREEN_WIDTH%x%SCREEN_HEIGHT%x%SCREEN_DEPTH% -nolisten tcp
+stdout_logfile=/var/log/supervisor/xvfb.log
+redirect_stderr=true
+autorestart=true
+priority=100
+
+[program:chromium-browser]
+environment=HOME="/home/vncuser",DISPLAY=":1",USER="vncuser"
+command=/usr/bin/chromium-browser --user-data-dir --no-sandbox --window-position=0,0 --window-size=%SCREEN_WIDTH%,%SCREEN_HEIGHT% --force-device-scale-factor=1
+stdout_logfile=/var/log/supervisor/chromium.log
+redirect_stderr=true
+user=vncuser
+autorestart=true
+priority=200
+
+[program:vncserver]
+environment=HOME="/home/vncuser",DISPLAY=":1",USER="vncuser"
+user=vncuser
+command=/usr/bin/x11vnc -display :1 -nopw -xkb -localhost -forever -shared
+stdout_logfile=/var/log/supervisor/vncserver.log
+redirect_stderr=true
+autorestart=true
+priority=300
